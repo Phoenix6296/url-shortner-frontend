@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/UI";
+} from "@/components/ui";
 import { copyToClipboard } from "@/lib/utils";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
