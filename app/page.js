@@ -1,24 +1,27 @@
 "use client";
-import {
-  Button,
-  Input,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui";
-import { copyToClipboard } from "@/lib/utils";
-import toast, { Toaster } from "react-hot-toast";
-import { useRouter } from "next/navigation";
+
 import { useState } from "react";
+import { copyToClipboard } from "@/lib/utils";
+import { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { handleGenerateURL } from "@/apis/url";
+import { Button, Input } from "@/components/ui";
 
 export default function Home() {
+  //Variables
   const router = useRouter();
   const [url, setUrl] = useState("");
 
+  //APIs
+  const { isLoading, mutate } = useMutation(() => handleGenerateURL(url));
+
+  //Functions
   const handleGenerateShortLink = (event) => {
     event.preventDefault();
+    mutate();
   };
+
   return (
     <div
       style={{
@@ -44,13 +47,16 @@ export default function Home() {
             type="name"
             className="text-lg"
             value={url}
+            placeholder="https://www.example.com"
             onChange={(e) => setUrl(e.target.value)}
           />
-          <Button type="submit">Generate</Button>
+          <Button type="submit" disabled={isLoading}>
+            Generate
+          </Button>
         </form>
 
         {/* Shortened Link */}
-        <section className="invisible	flex items-center justify-between gap-5 rounded-lg border border-primary p-3">
+        <section className="flex items-center justify-between gap-5 rounded-lg border border-primary p-3">
           <p className="text-slate-700 flex-1 truncate">Actual Link</p>
           <div className="flex items-center gap-5">
             <Button
@@ -60,22 +66,9 @@ export default function Home() {
             >
               https://example.com
             </Button>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger
-                  onClick={() => {
-                    copyToClipboard("https://example.com");
-                    toast.success("Copied!");
-                  }}
-                  className="cursor-pointer"
-                >
-                  Copy
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Click to copy the link!</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Button variant="ghost" onClick={() => copyToClipboard(url)}>
+              Copy
+            </Button>
           </div>
         </section>
       </div>
