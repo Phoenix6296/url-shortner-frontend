@@ -1,10 +1,11 @@
+import { URL_REGEX } from "@/lib/constant";
 import { getData, postData } from "@/lib/services";
+import { addProtocol } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 export const handleGenerateURL = async (url) => {
-  const urlRegex =
-    /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-  if (!urlRegex.test(url)) toast.error("Invalid URL");
+  if (!URL_REGEX.test(url)) throw new Error("Invalid URL");
+  url = addProtocol(url);
   await postData("/url", { url });
   toast.success("URL shortened successfully");
 };

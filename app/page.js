@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { copyToClipboard } from "@/lib/utils";
-import { Toaster } from "react-hot-toast";
+import { copyToClipboard, removeProtocol } from "@/lib/utils";
+import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import { handleGenerateURL, showAllURLs } from "@/apis/url";
 import { Button, Input } from "@/components/ui";
@@ -18,7 +18,7 @@ const Entry = ({ slug, originalUrl }) => {
           target="_blank"
           className="text-slate-700 truncate w-96 text-md hover:underline"
         >
-          {originalUrl || "Original URL"}
+          {removeProtocol(originalUrl) || "Original URL"}
         </Link>
       </div>
       <div className="flex items-center gap-5">
@@ -50,9 +50,9 @@ export default function Home() {
   //APIs
   const { isLoading, mutate } = useMutation(() => handleGenerateURL(url), {
     onSuccess: () => {
-      showAllURLs(setAllURLs);
-      setUrl("");
+      showAllURLs(setAllURLs), setUrl("");
     },
+    onError: (error) => toast.error(error.message),
   });
 
   //UseEffects
